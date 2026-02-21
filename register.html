@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register — NEXUS '26</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --neon: #00FFB2;
+      --neon2: #FF3CAC;
+      --dark: #080A12;
+      --card: #0D1120;
+      --mid: #131829;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--dark);
+      color: #E8EAF0;
+      font-family: 'Syne', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; }
+    .mono { font-family: 'Space Mono', monospace; }
+
+    /* Noise overlay */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 999;
+      opacity: 0.4;
+    }
+
+    /* Mesh gradient */
+    body {
+      background:
+        radial-gradient(ellipse 70% 50% at 10% 20%, rgba(0,255,178,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 70% at 90% 80%, rgba(255,60,172,0.06) 0%, transparent 60%),
+        var(--dark);
+    }
+
+    .glow-green { text-shadow: 0 0 30px rgba(0,255,178,0.5), 0 0 60px rgba(0,255,178,0.2); color: var(--neon); }
+    .glow-pink  { text-shadow: 0 0 30px rgba(255,60,172,0.5); color: var(--neon2); }
+
+    /* Nav */
+    nav {
+      background: rgba(8,10,18,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0,255,178,0.08);
+    }
+
+    /* Form card */
+    .form-card {
+      background: var(--card);
+      border: 1px solid rgba(0,255,178,0.15);
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .form-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon), var(--neon2), transparent);
+    }
+
+    /* Input fields */
+    .input-group { position: relative; }
+
+    .form-input {
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(0,255,178,0.15);
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: #E8EAF0;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+    }
+    .form-input:focus {
+      border-color: var(--neon);
+      box-shadow: 0 0 0 3px rgba(0,255,178,0.08), 0 0 20px rgba(0,255,178,0.05);
+      background: rgba(0,255,178,0.03);
+    }
+    .form-input::placeholder { color: rgba(232,234,240,0.3); }
+
+    .form-select {
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(0,255,178,0.15);
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: #E8EAF0;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      appearance: none;
+      cursor: pointer;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .form-select:focus {
+      border-color: var(--neon);
+      box-shadow: 0 0 0 3px rgba(0,255,178,0.08);
+    }
+    .form-select option { background: #0D1120; color: #E8EAF0; }
+
+    .select-arrow {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      pointer-events: none; color: var(--neon); font-size: 0.7rem;
+    }
+
+    /* Label */
+    .form-label {
+      display: block;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: rgba(0,255,178,0.7);
+      margin-bottom: 8px;
+    }
+
+    /* CTA button */
+    .btn-primary {
+      background: var(--neon);
+      color: #080A12;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: 0.12em;
+      padding: 16px 40px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 40px rgba(0,255,178,0.35), 0 8px 30px rgba(0,0,0,0.3);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    /* Ripple on click */
+    .btn-primary::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,0.15);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:active::after { opacity: 1; }
+
+    /* Event checkbox cards */
+    .event-check {
+      display: none;
+    }
+    .event-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(0,255,178,0.12);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.25s, background 0.25s;
+      font-size: 0.9rem;
+      user-select: none;
+    }
+    .event-label:hover {
+      border-color: rgba(0,255,178,0.35);
+      background: rgba(0,255,178,0.04);
+    }
+    .event-check:checked + .event-label {
+      border-color: var(--neon);
+      background: rgba(0,255,178,0.08);
+      color: var(--neon);
+    }
+    .event-check:checked + .event-label .check-box {
+      background: var(--neon);
+      border-color: var(--neon);
+    }
+    .event-check:checked + .event-label .check-box::after {
+      opacity: 1;
+    }
+
+    .check-box {
+      width: 18px; height: 18px;
+      border: 1.5px solid rgba(0,255,178,0.3);
+      border-radius: 4px;
+      flex-shrink: 0;
+      position: relative;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .check-box::after {
+      content: '✓';
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem;
+      color: #080A12;
+      font-weight: 900;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    /* Tag pill */
+    .tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,255,178,0.3);
+      color: var(--neon);
+      background: rgba(0,255,178,0.06);
+      letter-spacing: 0.08em;
+    }
+
+    /* Step indicator */
+    .step-dot {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      border: 1.5px solid rgba(0,255,178,0.3);
+      color: rgba(0,255,178,0.4);
+      transition: all 0.3s;
+    }
+    .step-dot.active {
+      background: var(--neon);
+      border-color: var(--neon);
+      color: var(--dark);
+      box-shadow: 0 0 20px rgba(0,255,178,0.4);
+    }
+    .step-dot.done {
+      background: rgba(0,255,178,0.15);
+      border-color: var(--neon);
+      color: var(--neon);
+    }
+    .step-line {
+      flex: 1; height: 1px;
+      background: rgba(0,255,178,0.15);
+      transition: background 0.3s;
+    }
+    .step-line.done { background: rgba(0,255,178,0.5); }
+
+    /* Section panels (multi-step) */
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+
+    /* Success screen */
+    .success-screen { display: none; }
+    .success-screen.active { display: flex; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--neon); border-radius: 99px; }
+
+    /* Fade in */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.5s ease forwards; }
+
+    /* Marquee */
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .marquee-inner { display: flex; animation: marquee 18s linear infinite; white-space: nowrap; }
+
+    /* Info sidebar card */
+    .info-card {
+      background: rgba(13,17,32,0.8);
+      border: 1px solid rgba(0,255,178,0.12);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    /* Error state */
+    .form-input.error, .form-select.error {
+      border-color: var(--neon2);
+      box-shadow: 0 0 0 3px rgba(255,60,172,0.08);
+    }
+    .error-msg {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--neon2);
+      margin-top: 5px;
+      display: none;
+    }
+    .error-msg.show { display: block; }
+
+    /* Pulse animation for success icon */
+    @keyframes pulse-ring {
+      0%   { transform: scale(0.8); opacity: 0.8; }
+      100% { transform: scale(1.4); opacity: 0; }
+    }
+    .pulse-ring {
+      position: absolute; inset: -8px;
+      border-radius: 50%;
+      border: 2px solid var(--neon);
+      animation: pulse-ring 1.5s ease-out infinite;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV + MARQUEE -->
+  <div class="fixed top-0 left-0 right-0 z-50" style="background:rgba(8,10,18,0.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,255,178,0.08);">
+    <div class="px-6 py-4">
+      <div class="max-w-6xl mx-auto flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:var(--neon)">
+            <span style="color:var(--dark); font-family:'Bebas Neue',sans-serif; font-size:1.1rem; line-height:1">N</span>
+          </div>
+          <span class="font-bold text-lg tracking-wider">NEXUS<span class="glow-green">'26</span></span>
+        </a>
+        <div class="hidden md:flex items-center gap-8 mono text-xs text-gray-400">
+          <a href="index.html#About"class="hover:text-white transition-colors">About</a>
+          <a href="index.html#schedule" class="hover:text-white transition-colors">Schedule</a>
+          <a href="index.html#events"   class="hover:text-white transition-colors">Events</a>
+          <a href="index.html#prizes"   class="hover:text-white transition-colors">Prizes</a>
+        </div>
+        <span class="tag">REGISTRATION OPEN</span>
+      </div>
+    </div>
+    <div class="overflow-hidden" style="border-top:1px solid rgba(0,255,178,0.1);">
+      <div class="mono text-xs py-1" style="color:rgba(0,255,178,0.4); background:rgba(0,255,178,0.04);">
+        <div class="marquee-inner">
+          <span class="px-8">★ HACKATHON</span><span class="px-8">★ ROBOTICS</span><span class="px-8">★ PAPER PRESENTATION</span>
+          <span class="px-8">★ CODING SPRINT</span><span class="px-8">★ DESIGN CLASH</span><span class="px-8">★ QUIZ BLITZ</span>
+          <span class="px-8">★ HACKATHON</span><span class="px-8">★ ROBOTICS</span><span class="px-8">★ PAPER PRESENTATION</span>
+          <span class="px-8">★ CODING SPRINT</span><span class="px-8">★ DESIGN CLASH</span><span class="px-8">★ QUIZ BLITZ</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="pt-40 pb-20 px-6">
+    <div class="max-w-6xl mx-auto">
+
+      <!-- Page header -->
+      <div class="mb-10 fade-up">
+        <div class="tag mb-4">NEXUS '26 · SILVER OAK UNIVERSITY</div>
+        <h1 class="display leading-none mb-2" style="font-size:clamp(3.5rem,8vw,7rem)">
+          REGISTER <span class="glow-green">NOW</span>
+        </h1>
+        <p class="text-gray-400 text-lg">Fill in your details to secure your spot at the biggest tech fest of the year.</p>
+      </div>
+
+      <!-- Step indicator -->
+      <div class="flex items-center gap-3 mb-10 fade-up" id="step-indicator">
+        <div class="step-dot active" id="dot-1">1</div>
+        <div class="step-line" id="line-1"></div>
+        <div class="step-dot" id="dot-2">2</div>
+        <div class="step-line" id="line-2"></div>
+        <div class="step-dot" id="dot-3">3</div>
+        <div class="ml-4 mono text-xs text-gray-500" id="step-label">PERSONAL DETAILS</div>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-8">
+
+        <!-- FORM -->
+        <div class="lg:col-span-2">
+          <div class="form-card p-8">
+
+            <!-- STEP 1: Personal Info -->
+            <div class="step-panel active" id="panel-1">
+              <h2 class="display text-3xl mb-6">PERSONAL <span class="glow-green">DETAILS</span></h2>
+              <div class="grid sm:grid-cols-2 gap-5">
+
+                <div>
+                  <label class="form-label">FIRST NAME *</label>
+                  <div class="input-group">
+                    <input type="text" class="form-input" id="fname" placeholder="Arjun" />
+                  </div>
+                  <div class="error-msg" id="err-fname">This field is required</div>
+                </div>
+
+                <div>
+                  <label class="form-label">LAST NAME *</label>
+                  <div class="input-group">
+                    <input type="text" class="form-input" id="lname" placeholder="Sharma" />
+                  </div>
+                  <div class="error-msg" id="err-lname">This field is required</div>
+                </div>
+
+                <div class="sm:col-span-2">
+                  <label class="form-label">EMAIL ADDRESS *</label>
+                  <input type="email" class="form-input" id="email" placeholder="arjun@college.edu.in" />
+                  <div class="error-msg" id="err-email">Enter a valid email address</div>
+                </div>
+
+                <div>
+                  <label class="form-label">PHONE NUMBER *</label>
+                  <input type="tel" class="form-input" id="phone" placeholder="+91 98765 43210" />
+                  <div class="error-msg" id="err-phone">Enter a valid phone number</div>
+                </div>
+
+                <div>
+                  <label class="form-label">GENDER</label>
+                  <div class="input-group">
+                    <select class="form-select" id="gender">
+                      <option value="">Select gender</option>
+                      <option>Male</option>
+                      <option>Female</option>
+                      <option>Non-binary</option>
+                      <option>Prefer not to say</option>
+                    </select>
+                    <span class="select-arrow">▼</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="form-label">DATE OF BIRTH</label>
+                  <input type="date" class="form-input" id="dob" style="color-scheme:dark;" />
+                </div>
+
+                <div>
+                  <label class="form-label">CITY *</label>
+                  <input type="text" class="form-input" id="city" placeholder="Bangalore" />
+                  <div class="error-msg" id="err-city">This field is required</div>
+                </div>
+
+              </div>
+
+              <div class="flex justify-end mt-8">
+                <button class="btn-primary" style="width:auto;padding:14px 48px;" onclick="goStep(2)">
+                  NEXT — ACADEMIC INFO →
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 2: Academic Info -->
+            <div class="step-panel" id="panel-2">
+              <h2 class="display text-3xl mb-6">ACADEMIC <span class="glow-green">DETAILS</span></h2>
+              <div class="grid sm:grid-cols-2 gap-5">
+
+                <div class="sm:col-span-2">
+                  <label class="form-label">COLLEGE / INSTITUTION NAME *</label>
+                  <input type="text" class="form-input" id="college" placeholder="Aditya silver oak college of technology" />
+                  <div class="error-msg" id="err-college">This field is required</div>
+                </div>
+
+                <div>
+                  <label class="form-label">DEPARTMENT / BRANCH *</label>
+                  <div class="input-group">
+                    <select class="form-select" id="dept">
+                      <option value="">Select department</option>
+                      <option>Computer Science & Engineering</option>
+                      <option>Electronics & Communication</option>
+                      <option>Mechanical Engineering</option>
+                      <option>Civil Engineering</option>
+                      <option>Electrical Engineering</option>
+                      <option>Information Technology</option>
+                      <option>Artificial Intelligence & ML</option>
+                      <option>Data Science</option>
+                      <option>Other</option>
+                    </select>
+                    <span class="select-arrow">▼</span>
+                  </div>
+                  <div class="error-msg" id="err-dept">Please select a department</div>
+                </div>
+
+                <div>
+                  <label class="form-label">YEAR OF STUDY *</label>
+                  <div class="input-group">
+                    <select class="form-select" id="year">
+                      <option value="">Select year</option>
+                      <option>1st Year</option>
+                      <option>2nd Year</option>
+                      <option>3rd Year</option>
+                      <option>4th Year</option>
+                      <option>Postgraduate</option>
+                    </select>
+                    <span class="select-arrow">▼</span>
+                  </div>
+                  <div class="error-msg" id="err-year">Please select your year</div>
+                </div>
+
+                <div>
+                  <label class="form-label">COLLEGE ID / ROLL NUMBER *</label>
+                  <input type="text" class="form-input" id="rollno" placeholder="2302031800103" />
+                  <div class="error-msg" id="err-rollno">This field is required</div>
+                </div>
+
+                <div>
+                  <label class="form-label">COLLEGE CITY *</label>
+                  <input type="text" class="form-input" id="collegecity" placeholder="Ahmedabad" />
+                  <div class="error-msg" id="err-collegecity">This field is required</div>
+                </div>
+
+                <div class="sm:col-span-2">
+                  <label class="form-label">FACULTY ADVISOR / MENTOR (optional)</label>
+                  <input type="text" class="form-input" id="advisor" placeholder="Prof. Bhavesh Berani" />
+                </div>
+
+              </div>
+
+              <div class="flex justify-between mt-8 gap-4">
+                <button class="btn-primary" style="width:auto;padding:14px 32px;background:transparent;border:1.5px solid rgba(0,255,178,0.3);color:var(--neon);font-size:1rem;" onclick="goStep(1)">
+                  ← BACK
+                </button>
+                <button class="btn-primary" style="width:auto;padding:14px 48px;" onclick="goStep(3)">
+                  NEXT — CHOOSE EVENTS →
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 3: Event Selection -->
+            <div class="step-panel" id="panel-3">
+              <h2 class="display text-3xl mb-2">CHOOSE <span class="glow-green">EVENTS</span></h2>
+              <p class="text-gray-500 text-sm mb-6">Select all events you wish to participate in. Team events require a separate team registration link.</p>
+
+              <div class="grid sm:grid-cols-2 gap-3 mb-6">
+
+                <div>
+                  <input type="checkbox" class="event-check" id="ev-hackathon" />
+                  <label class="event-label" for="ev-hackathon">
+                    <span class="check-box"></span>
+                    <span>💻 Hackathon <span class="mono text-xs text-gray-500 block">Team · 2–5 members</span></span>
+                  </label>
+                </div>
+
+                <div>
+                  <input type="checkbox" class="event-check" id="ev-robo" />
+                  <label class="event-label" for="ev-robo">
+                    <span class="check-box"></span>
+                    <span>🤖 Robo Wars <span class="mono text-xs text-gray-500 block">Team · 2–4 members</span></span>
+                  </label>
+                </div>
+
+                <div>
+                  <input type="checkbox" class="event-check" id="ev-coding" />
+                  <label class="event-label" for="ev-coding">
+                    <span class="check-box"></span>
+                    <span>⚡ Coding Sprint <span class="mono text-xs text-gray-500 block">Individual</span></span>
+                  </label>
+                </div>
+
+                <div>
+                  <input type="checkbox" class="event-check" id="ev-paper" />
+                  <label class="event-label" for="ev-paper">
+                    <span class="check-box"></span>
+                    <span>📊 Paper Presentation <span class="mono text-xs text-gray-500 block">Solo / Duo</span></span>
+                  </label>
+                </div>
+
+                <div>
+                  <input type="checkbox" class="event-check" id="ev-design" />
+                  <label class="event-label" for="ev-design">
+                    <span class="check-box"></span>
+                    <span>🎨 Design Clash <span class="mono text-xs text-gray-500 block">Individual</span></span>
+                  </label>
+                </div>
+
+                <div>
+                  <input type="checkbox" class="event-check" id="ev-quiz" />
+                  <label class="event-label" for="ev-quiz">
+                    <span class="check-box"></span>
+                    <span>❓ Quiz Blitz <span class="mono text-xs text-gray-500 block">Team · 2 members</span></span>
+                  </label>
+                </div>
+
+                <div>
+                  <input type="checkbox" class="event-check" id="ev-circuit" />
+                  <label class="event-label" for="ev-circuit">
+                    <span class="check-box"></span>
+                    <span>🔌 Circuit Debug <span class="mono text-xs text-gray-500 block">Individual</span></span>
+                  </label>
+                </div>
+
+                <div>
+                  <input type="checkbox" class="event-check" id="ev-project" />
+                  <label class="event-label" for="ev-project">
+                    <span class="check-box"></span>
+                    <span>🚀 Project Expo <span class="mono text-xs text-gray-500 block">Team · up to 3</span></span>
+                  </label>
+                </div>
+
+              </div>
+
+              <div class="error-msg" id="err-events" style="margin-bottom:12px;">Please select at least one event</div>
+
+              <!-- T-shirt size -->
+              <div class="mb-6">
+                <label class="form-label">T-SHIRT SIZE</label>
+                <div class="input-group">
+                  <select class="form-select" id="tshirt">
+                    <option value="">Select size</option>
+                    <option>XS</option>
+                    <option>S</option>
+                    <option>M</option>
+                    <option>L</option>
+                    <option>XL</option>
+                    <option>XXL</option>
+                  </select>
+                  <span class="select-arrow">▼</span>
+                </div>
+              </div>
+
+              <!-- Dietary preference -->
+              <div class="mb-6">
+                <label class="form-label">DIETARY PREFERENCE</label>
+                <div class="input-group">
+                  <select class="form-select" id="diet">
+                    <option value="">Select preference</option>
+                    <option>Vegetarian</option>
+                    <option>Non-Vegetarian</option>
+                    <option>Vegan</option>
+                    <option>Jain</option>
+                    <option>No preference</option>
+                  </select>
+                  <span class="select-arrow">▼</span>
+                </div>
+              </div>
+
+              <!-- How did you hear -->
+              <div class="mb-6">
+                <label class="form-label">HOW DID YOU HEAR ABOUT US?</label>
+                <div class="input-group">
+                  <select class="form-select" id="source">
+                    <option value="">Select source</option>
+                    <option>Instagram</option>
+                    <option>LinkedIn</option>
+                    <option>College Notice Board</option>
+                    <option>Friend / Classmate</option>
+                    <option>Faculty</option>
+                    <option>WhatsApp Group</option>
+                    <option>Other</option>
+                  </select>
+                  <span class="select-arrow">▼</span>
+                </div>
+              </div>
+
+              <!-- Terms -->
+              <div class="mb-8">
+                <div>
+                  <input type="checkbox" class="event-check" id="terms" />
+                  <label class="event-label" for="terms" style="border-color:rgba(255,60,172,0.2);">
+                    <span class="check-box" style="border-color:rgba(255,60,172,0.3);"></span>
+                    <span class="text-sm text-gray-400">I agree to the <span style="color:var(--neon)">Terms & Conditions</span> and <span style="color:var(--neon)">Code of Conduct</span> of NEXUS '26 *</span>
+                  </label>
+                  <div class="error-msg" id="err-terms">You must agree to the terms to proceed</div>
+                </div>
+              </div>
+
+              <div class="flex justify-between gap-4">
+                <button class="btn-primary" style="width:auto;padding:14px 32px;background:transparent;border:1.5px solid rgba(0,255,178,0.3);color:var(--neon);font-size:1rem;" onclick="goStep(2)">
+                  ← BACK
+                </button>
+                <button class="btn-primary" style="flex:1;max-width:300px;" onclick="submitForm()">
+                  🚀 COMPLETE REGISTRATION
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="space-y-5">
+
+          <!-- Event info -->
+          <div class="info-card fade-up">
+            <div class="mono text-xs text-gray-500 mb-3 tracking-widest">EVENT INFO</div>
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <span class="text-lg">📅</span>
+                <div>
+                  <div class="font-semibold text-sm">March 14–16, 2026</div>
+                  <div class="text-gray-500 text-xs mono">3 Days of Competition</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="text-lg">📍</span>
+                <div>
+                  <div class="font-semibold text-sm">Silver Oak University</div>
+                  <div class="text-gray-500 text-xs mono">Ahmedabad, Gujarat</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="text-lg">🏆</span>
+                <div>
+                  <div class="font-semibold text-sm">₹5,00,000 Prize Pool</div>
+                  <div class="text-gray-500 text-xs mono">Across 8 events</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="text-lg">✅</span>
+                <div>
+                  <div class="font-semibold text-sm">Free Registration</div>
+                  <div class="text-gray-500 text-xs mono">Open to all UG & PG students</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deadline -->
+          <div class="info-card" style="border-color:rgba(255,60,172,0.2);">
+            <div class="mono text-xs mb-2 tracking-widest" style="color:var(--neon2);">⏳ REGISTRATION DEADLINE</div>
+            <div class="display text-4xl glow-pink mb-1">MAR 8, 2026</div>
+            <div class="text-gray-500 text-sm">Early registrants get exclusive NEXUS merchandise kit</div>
+          </div>
+
+          <!-- What you get -->
+          <div class="info-card">
+            <div class="mono text-xs text-gray-500 mb-3 tracking-widest">WHAT YOU GET</div>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2 text-sm">
+                <span class="glow-green">✦</span> Official NEXUS T-shirt
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <span class="glow-green">✦</span> Participation Certificate
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <span class="glow-green">✦</span> Access to all workshops
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <span class="glow-green">✦</span> Meals & refreshments (Day 1–3)
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <span class="glow-green">✦</span> Networking with industry pros
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <span class="glow-green">✦</span> Internship referral opportunities
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact -->
+          <div class="info-card">
+            <div class="mono text-xs text-gray-500 mb-3 tracking-widest">NEED HELP?</div>
+            <div class="space-y-2 text-sm">
+              <div class="text-gray-400">📧 <a href="mailto:nexus@silveroak.edu.in" class="hover:text-white transition-colors" style="color:var(--neon)">nexus@silveroak.edu.in</a></div>
+              <div class="text-gray-400">📞 <span class="text-white">+91 98765 43210</span></div>
+              <div class="text-gray-400 text-xs mono mt-2">Mon–Sat · 9AM to 6PM IST</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- SUCCESS SCREEN -->
+  <div class="success-screen fixed inset-0 z-50 flex-col items-center justify-center px-6 text-center" id="success-screen"
+    style="background:rgba(8,10,18,0.97); backdrop-filter:blur(20px);">
+    <div class="relative mb-8">
+      <div class="pulse-ring"></div>
+      <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto" style="background:rgba(0,255,178,0.1);border:2px solid var(--neon);">
+        <span style="font-size:2rem;">✓</span>
+      </div>
+    </div>
+    <div class="tag mb-4">REGISTRATION SUCCESSFUL</div>
+    <h2 class="display text-5xl md:text-7xl mb-4">YOU'RE <span class="glow-green">IN!</span></h2>
+    <p class="text-gray-400 max-w-md mx-auto mb-3 text-lg">
+      Welcome to <span class="text-white font-semibold">NEXUS '26</span>! Your registration has been confirmed.
+    </p>
+    <p class="text-gray-500 text-sm mono mb-8" id="confirm-email">A confirmation email has been sent to your registered address.</p>
+    <div class="flex flex-wrap gap-4 justify-center">
+      <a href="index.html">
+        <button class="btn-primary" style="width:auto;padding:14px 36px;">← BACK TO HOME</button>
+      </a>
+      <button onclick="window.print()" class="btn-primary" style="width:auto;padding:14px 36px;background:transparent;border:1.5px solid rgba(0,255,178,0.3);color:var(--neon);">
+        🖨 PRINT CONFIRMATION
+      </button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="px-6 py-8 border-t" style="border-color:rgba(0,255,178,0.08)">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded flex items-center justify-center" style="background:var(--neon)">
+          <span style="color:var(--dark); font-family:'Bebas Neue',sans-serif; font-size:0.85rem">N</span>
+        </div>
+        <span class="font-bold tracking-wider">NEXUS '26</span>
+      </div>
+      <div class="mono text-xs text-gray-600 text-center">© 2026 Silver Oak University · Student Events Committee</div>
+      <div class="flex gap-6 mono text-xs text-gray-500">
+        <a href="#" class="hover:text-white transition-colors">Instagram</a>
+        <a href="#" class="hover:text-white transition-colors">LinkedIn</a>
+        <a href="#" class="hover:text-white transition-colors">Twitter</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    let currentStep = 1;
+
+    const stepLabels = ['', 'PERSONAL DETAILS', 'ACADEMIC DETAILS', 'EVENT SELECTION'];
+
+    function goStep(step) {
+      if (step > currentStep && !validateStep(currentStep)) return;
+
+      document.getElementById(`panel-${currentStep}`).classList.remove('active');
+      currentStep = step;
+      document.getElementById(`panel-${currentStep}`).classList.add('active');
+
+      // Update dots
+      for (let i = 1; i <= 3; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        dot.classList.remove('active', 'done');
+        if (i < currentStep) dot.classList.add('done');
+        else if (i === currentStep) dot.classList.add('active');
+      }
+
+      // Update lines
+      for (let i = 1; i <= 2; i++) {
+        const line = document.getElementById(`line-${i}`);
+        line.classList.toggle('done', i < currentStep);
+      }
+
+      document.getElementById('step-label').textContent = stepLabels[currentStep];
+
+      // Scroll to top of form
+      window.scrollTo({ top: 100, behavior: 'smooth' });
+    }
+
+    function validateStep(step) {
+      let valid = true;
+
+      if (step === 1) {
+        valid &= requireField('fname', 'err-fname');
+        valid &= requireField('lname', 'err-lname');
+        valid &= requireEmail('email', 'err-email');
+        valid &= requirePhone('phone', 'err-phone');
+        valid &= requireField('city', 'err-city');
+      }
+
+      if (step === 2) {
+        valid &= requireField('college', 'err-college');
+        valid &= requireSelect('dept', 'err-dept');
+        valid &= requireSelect('year', 'err-year');
+        valid &= requireField('rollno', 'err-rollno');
+        valid &= requireField('collegecity', 'err-collegecity');
+      }
+
+      return valid;
+    }
+
+    function requireField(id, errId) {
+      const el = document.getElementById(id);
+      const err = document.getElementById(errId);
+      if (!el.value.trim()) {
+        el.classList.add('error');
+        err.classList.add('show');
+        return false;
+      }
+      el.classList.remove('error');
+      err.classList.remove('show');
+      return true;
+    }
+
+    function requireSelect(id, errId) {
+      const el = document.getElementById(id);
+      const err = document.getElementById(errId);
+      if (!el.value) {
+        el.classList.add('error');
+        err.classList.add('show');
+        return false;
+      }
+      el.classList.remove('error');
+      err.classList.remove('show');
+      return true;
+    }
+
+    function requireEmail(id, errId) {
+      const el = document.getElementById(id);
+      const err = document.getElementById(errId);
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value);
+      if (!valid) {
+        el.classList.add('error');
+        err.classList.add('show');
+        return false;
+      }
+      el.classList.remove('error');
+      err.classList.remove('show');
+      return true;
+    }
+
+    function requirePhone(id, errId) {
+      const el = document.getElementById(id);
+      const err = document.getElementById(errId);
+      const valid = /^[\d\s\+\-]{7,15}$/.test(el.value.trim());
+      if (!valid) {
+        el.classList.add('error');
+        err.classList.add('show');
+        return false;
+      }
+      el.classList.remove('error');
+      err.classList.remove('show');
+      return true;
+    }
+
+    function submitForm() {
+      // Check at least one event
+      const events = ['ev-hackathon','ev-robo','ev-coding','ev-paper','ev-design','ev-quiz','ev-circuit','ev-project'];
+      const anySelected = events.some(id => document.getElementById(id).checked);
+      const evErr = document.getElementById('err-events');
+      if (!anySelected) {
+        evErr.classList.add('show');
+        return;
+      }
+      evErr.classList.remove('show');
+
+      // Check terms
+      const terms = document.getElementById('terms');
+      const termsErr = document.getElementById('err-terms');
+      if (!terms.checked) {
+        termsErr.classList.add('show');
+        return;
+      }
+      termsErr.classList.remove('show');
+
+      // Show success
+      const email = document.getElementById('email').value;
+      document.getElementById('confirm-email').textContent = `A confirmation email has been sent to ${email}`;
+      document.getElementById('success-screen').classList.add('active');
+    }
+
+    // Live clear errors on input
+    document.querySelectorAll('.form-input, .form-select').forEach(el => {
+      el.addEventListener('input', () => {
+        el.classList.remove('error');
+        const errId = 'err-' + el.id;
+        const err = document.getElementById(errId);
+        if (err) err.classList.remove('show');
+      });
+    });
+  </script>
+</body>
+</html>
